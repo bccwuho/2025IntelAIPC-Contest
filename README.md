@@ -28,12 +28,27 @@ Ollama run qwen3:30b-a3b-thinking-2507-q4_K_M --verbose
 <img width="1141" height="760" alt="image" src="https://github.com/user-attachments/assets/5ccc9a7d-665d-4235-b3a5-bcd9f7e31962" />
 
 打开另一个PowerShell （以管理员身份运行）
-ollama pull qwen3-embedding:0.6b-q8_0
+ollama pull qwen3-embedding:0.6b-q8_0 （Q8大小700MB，context达32K）
 失败，发现官方ollama 运行embedding模型是成功的，ollama run qwen3-embedding:0.6b-q8_0 "hi"。说明可能目前Ollama Intel优化版支持embedding还不够，https://github.com/ollama/ollama/issues/12368 里说HF的模型是OK的
 但实际用 ollama create qwen3-embedding-0.6b-q8_0 -f Modelfile 指向HF模型还是不行，所以放弃Ollama Intel优化版！！！
 
 Wait...
 后来发现改用 nomic-embed-text 模型就可以了！！！
+
+用下面的命令来下载nomic-embed-text模型 https://ollama.com/library/nomic-embed-text （FP16也只有270MB，Context只有2K）
+C:\Ollama4Intel> ./ollama pull nomic-embed-text  
+
+用下面的命令来测试
+curl -Uri "http://localhost:11434/api/embed" -Method POST -ContentType "application/json" -Body '{"model":"nomic-embed-text","input":["你好世界","嵌入模型测试"]}'
+
+研究了Embedding 模型的榜单，发现一些对中英文友好且在Ollama直接能用的Embedding模型
+https://github.com/embeddings-benchmark/mteb
+https://huggingface.co/spaces/mteb/leaderboard
+
+./ollama pull shaw/dmeta-embedding-zh                1K上下文，409MB，其small版283MB在MTEB中英文排名与Qwen3-0.6b-embedding相当，平均分为66
+ollama pull EntropyYue/jina-embeddings-v2-base-zh    8K上下文，322MB，其v3多语言版在MTEB总榜上比Qwen3-0.6b-embedding平均分差6分为58分
+C:\Ollama4Intel> ./ollama pull nomic-embed-text      2K上下文，270MB，中英文性能未知
+
 
 
 

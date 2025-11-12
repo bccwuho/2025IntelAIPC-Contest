@@ -85,12 +85,25 @@ docker compose ps
 打开 Taskbar上的Docker Desktop
 打开 WSL的Ubuntu
 sudo su -   （默认passwd= devcloud）
-~/apps/dify/docker
+cd ~/apps/dify/docker
 docker compose up -d
 
 docker compose ps
 
+http://localhost/install
+临时的email用test1@test.com / test12345
+登录后配置Dify使用模型时，发现在ollama run qwen3-30b时内存不够了，Task Manager中其实是够的，原因是WSL2虚拟机缺省占用了16G（通过free -h能看到），所以用以下配置再重启WSL2
 
+调整 WSL 配额，在 Windows 编辑 C:\Users\devcloud\.wslconfig（没有就新建）：
+```bash
+[wsl2]
+memory=4GB          # 按你机器内存设置，比如 Dify需要2C4G
+swap=4GB            # 建议给足，避免峰值 OOM
+localhostForwarding=true
+```
+
+另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost
+http://host.docker.internal:11434
 
 
 

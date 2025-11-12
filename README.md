@@ -50,6 +50,51 @@ https://huggingface.co/spaces/mteb/leaderboard
 ollama pull EntropyYue/jina-embeddings-v2-base-zh    8K上下文，322MB，2024年出的，其v3多语言版在MTEB总榜上比Qwen3-0.6b-embedding平均分差6分为58分
 C:\Ollama4Intel> ./ollama pull nomic-embed-text      2K上下文，270MB，2024年出的，中英文性能未知
 ```
+根据https://ollama.com/dengcao/Qwen3-Reranker-0.6B 所描述的“截止2025年6月11日，ollama暂不支持重排模型。经测试Ragflow 0.19和Dify不支持ollama的重排模型，添加所有ollama的重排模型时均会提示错误。FastGPT虽然可以添加，但是重排无效。”所以暂时先不安装rerank模型了。
+
+## 2. 安装Dify
+
+### 2.1 安装WSL2的Ubuntu系统
+
+打开Windows Powershell
+wsl --install -d Ubuntu
+
+wsl -d Ubuntu 打开并进入Ubuntu系统
+
+### 2.2 安装Docker Compose，参考 https://docs.docker.com/desktop/setup/install/windows-install/#wsl-2-backend
+
+### 2.3 通过WSL2 在Docker Compose中安装和运行 Dify ，参考https://legacy-docs.dify.ai/getting-started/install-self-hosted/docker-compose 
+
+打开WSL终端
+sudo su   进入root再运行上面URL中的命令！！！
+按照https://legacy-docs.dify.ai/getting-started/install-self-hosted/docker-compose  做有可能再docker compose ps时发现db起不来，看log后发现是permission错误，咨询AI后使用下面命令搞定，只是后面都要进~/apps/dify/docker 启动docker compose up -d
+```bash
+# 在你的 WSL 发行版（Ubuntu 等）里：
+mkdir -p ~/apps
+mv /mnt/c/Users/devcloud/dify ~/apps/dify
+
+cd ~/apps/dify/docker
+# 清掉容器和卷（会删除数据库数据）
+docker compose down -v
+docker compose up -d
+
+docker compose ps
+```
+
+重启电脑后要
+打开 Taskbar上的Docker Desktop
+打开 WSL的Ubuntu
+sudo su -   （默认passwd= devcloud）
+~/apps/dify/docker
+docker compose up -d
+
+docker compose ps
+
+
+
+
+
+
 
 
 

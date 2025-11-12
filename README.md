@@ -45,9 +45,11 @@ curl -Uri "http://localhost:11434/api/embed" -Method POST -ContentType "applicat
 https://github.com/embeddings-benchmark/mteb
 https://huggingface.co/spaces/mteb/leaderboard
 
-./ollama pull shaw/dmeta-embedding-zh                1K上下文，409MB，其small版283MB在MTEB中英文排名与Qwen3-0.6b-embedding相当，平均分为66
-ollama pull EntropyYue/jina-embeddings-v2-base-zh    8K上下文，322MB，其v3多语言版在MTEB总榜上比Qwen3-0.6b-embedding平均分差6分为58分
-C:\Ollama4Intel> ./ollama pull nomic-embed-text      2K上下文，270MB，中英文性能未知
+```bash
+./ollama pull shaw/dmeta-embedding-zh                1K上下文，409MB，2025年出的，其small版283MB在MTEB中英文排名与Qwen3-0.6b-embedding相当，平均分为66
+ollama pull EntropyYue/jina-embeddings-v2-base-zh    8K上下文，322MB，2024年出的，其v3多语言版在MTEB总榜上比Qwen3-0.6b-embedding平均分差6分为58分
+C:\Ollama4Intel> ./ollama pull nomic-embed-text      2K上下文，270MB，2024年出的，中英文性能未知
+```
 
 
 

@@ -22,7 +22,7 @@ Ollama run qwen3:30b-a3b-thinking-2507-q4_K_M --verbose
 <img width="1145" height="755" alt="image" src="https://github.com/user-attachments/assets/e1ff4909-f33f-4858-a653-09dbcf766d7c" />
 
 **去https://github.com/intel/ipex-llm/blob/main/docs/mddocs/Quickstart/ollama_portable_zip_quickstart.md 下载最新的Ollama Intel优化版 （ollama-ipex-llm-2.3.0b20250725-win.zip 对应OllamaV0.9.3，之前版本有可能不支持MoE）**
-解压，然后start-ollama.bat中加入“ set OLLAMA_NUM_CTX=24000 ” 来扩大上下文到24K（缺省Ollama只给2K），最后运行start-ollama.bat，注意在运行前要关闭之前的Ollama官方版本
+解压，然后start-ollama.bat中加入“ set OLLAMA_NUM_CTX=16384 ” 来扩大上下文到16K（>单词表9.5K+词汇记忆chunckTOP10*0.25K；缺省Ollama只给2K），最后运行start-ollama.bat，注意在运行前要关闭之前的Ollama官方版本
 然后Ollama run qwen3:30b-a3b-thinking-2507-q4_K_M --verbose
 测得生成速度为\~20tokens/s，的确Ollama Intel优化版比官方版快了~25%，此时VRAM消耗达到20.9GB
 <img width="1141" height="760" alt="image" src="https://github.com/user-attachments/assets/5ccc9a7d-665d-4235-b3a5-bcd9f7e31962" />
@@ -75,7 +75,7 @@ mv /mnt/c/Users/devcloud/dify ~/apps/dify
 
 cd ~/apps/dify/docker
 # 清掉容器和卷（会删除数据库数据）
-docker compose down -v
+docker compose down -v   (一般情况下不要加-v，这样会删数据库，这次是迁移目录所以要加-v)
 docker compose up -d
 
 docker compose ps
@@ -97,13 +97,41 @@ http://localhost/install
 调整 WSL 配额，在 Windows 编辑 C:\Users\devcloud\.wslconfig（没有就新建）：
 ```bash
 [wsl2]
-memory=4GB          # 按你机器内存设置，比如 Dify需要2C4G
-swap=4GB            # 建议给足，避免峰值 OOM
+memory=3GB          # 按你机器内存设置，比如 Dify需要2C4G,但此场景为了省内存所以极限可以到3GB
+swap=1GB            # 建议给足，避免峰值 OOM
 localhostForwarding=true
 ```
 
 另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost
 http://host.docker.internal:11434
+
+# 重启机器后启动所有项目
+
+```bash
+打开Windows Powershell
+cd C:\Ollama4Intel
+./start-ollama.bat
+
+打开 Taskbar上的Docker Desktop
+打开Windows Powershell
+打开 WSL的Ubuntu
+sudo su -   （默认passwd= devcloud）
+cd ~/apps/dify/docker
+docker compose up -d
+docker compose ps
+
+http://localhost/apps    临时的email用test1@test.com / test12345
+另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost
+http://host.docker.internal:11434
+qwen3:30b-a3b-thinking-2507-q4_K_M
+EntropyYue/jina-embeddings-v2-base-zh
+```
+
+# 关机时运行的命令
+```bash
+docker compose stop    关闭Dify，而不是docker-compose down，会把docker删除，里面的数据就没了
+关闭ollama窗口
+```
 
 
 

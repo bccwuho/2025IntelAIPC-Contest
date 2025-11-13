@@ -117,8 +117,9 @@ cd C:\Ollama4Intel
 打开 WSL的Ubuntu
 sudo su -   （默认passwd= devcloud）
 cd ~/apps/dify/docker
-docker compose up -d
-docker compose ps
+docker-compose up -d    #用docker-compose start 有时表面up了，但浏览器中出不来？？？
+docker-compose ps
+此时Docker和Dify应该都已经up了，如果没有up，则 docker-compose restart 或者 docker-compose up -d
 
 http://localhost/apps    临时的email用test1@test.com / test12345
 另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost
@@ -129,7 +130,7 @@ EntropyYue/jina-embeddings-v2-base-zh
 
 # 关机时运行的命令
 ```bash
-docker compose stop    关闭Dify，而不是docker-compose down，会把docker删除，里面的数据就没了
+docker-compose stop    关闭Dify，而不是docker-compose down，会把docker删除，里面的数据就没了！！！
 关闭ollama窗口
 ```
 

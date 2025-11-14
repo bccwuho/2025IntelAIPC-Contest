@@ -126,6 +126,7 @@ http://localhost/apps    临时的email用test1@test.com / test12345
 另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost
 http://host.docker.internal:11434
 qwen3:30b-a3b-thinking-2507-q4_K_M
+qwen3:30b-a3b-instruct-2507-q4_K_M
 EntropyYue/jina-embeddings-v2-base-zh
 ```
 
@@ -136,13 +137,18 @@ docker-compose stop    关闭Dify，而不是docker-compose down，会把docker�
 ```
 
 ## 实测效果
-- 当提示词含有#工作流程 #输出格式 #输出示例 和 9.5K tokens的《高考词汇表》时
-  gpt5mini@gptgod                                输出格式和输出内容的RAG效果都很好<BR>
-  qwen3-30b-a3b-thingking-INT4@Ollama+16K上下文  完全没做到指令跟随<BR>
-  qwen3-30b-a3b-2507-Q8:ctx32k-mlock@Ollama      单个词效果好，追问输出格式对但输出内容RAG效果一般，<BR>
-  Qwen3-30B-A3B-Thinking-2507-AWQ-4bit@vLLM      <BR>
+- **当提示词含有#工作流程 #输出格式 #输出示例 和 9.5K tokens的《高考词汇表》时；qwen3-30b-Q8（可用） >> qwen3-30b-AWQ4 > qwen3-30b-INT4**
+  gpt5mini@gptgod                                                  输出格式和输出内容的RAG效果都很好？？？<BR>
+  qwen3-30b-a3b-2507-Q8:ctx32k-mlock@Ollama                        单个词/词根效果好，追问输出格式对但输出内容RAG效果一般？？？，词转题也OK<BR>
+  Qwen3-30B-A3B-Thinking-2507-AWQ-4bit@vLLM                        单个词效果好，词转题也OK；输出格式都对，但单个词根和追问输出内容不行；另外可能是vLLM的缘故输出think都显示出来的<BR>
+  **qwen3-30b-a3b-thingking-INT4@Ollama Intel优化版+16K上下文      完全没做到指令跟随，说明INT4量化模型对长文本的指令跟随不行！<BR>**
   Qwen3-30BThink-2507-FP8@vLLM                    <BR>
-- 
+- **当提示词只含有#工作流程 #输出格式 #输出示例，去掉9.5K tokens的《高考词汇表》时**
+  **qwen3-30b-a3b-thingking-INT4@Ollama+16K上下文                  单个词效果好，词转题OK，追问时输出格式OK但RAG都不行；输出think都显示出来的<BR>，有时可能因VRAM短暂不够要过10分钟（ollama自动退出模型时间）才能继续问？？？**
+  **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文                   单个词效果好，词转题OK，追问时输出格式OK但RAG都不行;输出无Think，比thinking模型干净实用速度快最多等不到1min模型加载时间**
+                                                                  有意思的是词转题在“Instruction"里加个仔细就能做对题！（1、对于。。。或者题目的答案涉及到某一单词需补充学习时（先**仔细**分析题目再把答案单词做为”该单词“进入下面的工作流程）“）
+
+  
 
 
 

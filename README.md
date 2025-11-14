@@ -102,8 +102,9 @@ swap=1GB            # 建议给足，避免峰值 OOM
 localhostForwarding=true
 ```
 
-另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost
+**另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost**
 http://host.docker.internal:11434
+**注意配置Ollama模型时要把缺省类型从“Completion”改为“Chat”，还要设置context 长度（缺省只有4096）到16384**
 
 # 重启机器后启动所有项目
 
@@ -134,6 +135,14 @@ docker-compose stop    关闭Dify，而不是docker-compose down，会把docker�
 关闭ollama窗口
 ```
 
+## 实测效果
+- 当提示词含有#工作流程 #输出格式 #输出示例 和 9.5K tokens的《高考词汇表》时
+  gpt5mini@gptgod                                输出格式和输出内容的RAG效果都很好<BR>
+  qwen3-30b-a3b-thingking-INT4@Ollama+16K上下文  完全没做到指令跟随<BR>
+  qwen3-30b-a3b-2507-Q8:ctx32k-mlock@Ollama      单个词效果好，追问输出格式对但输出内容RAG效果一般，<BR>
+  Qwen3-30B-A3B-Thinking-2507-AWQ-4bit@vLLM      <BR>
+  Qwen3-30BThink-2507-FP8@vLLM                    <BR>
+- 
 
 
 

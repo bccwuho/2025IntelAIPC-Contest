@@ -138,41 +138,65 @@ docker-compose stop    关闭Dify，而不是docker-compose down，会把docker�
 ```
 
 ## 实测效果
-- **当提示词含有#工作流程 #输出格式 #输出示例 和 9.5K tokens的《高考词汇表》时；qwen3-30b-Q8（可用） >> qwen3-30b-AWQ4 > qwen3-30b-INT4**
+- **当提示词含有#工作流程 #输出格式 #输出示例 和 9.5K tokens的《高考词汇表》时；qwen3-30b-Q8（可用） >> qwen3-30b-AWQ4 > qwen3-30b-INT4；EntropyYue/jina-embeddings-v2-base-zh（embed效果不如qwen3-0.6b）**
   gpt5mini@gptgod                                                  输出格式和输出内容的RAG效果都很好？？？<BR>
   qwen3-30b-a3b-2507-Q8:ctx32k-mlock@Ollama                        单个词/词根效果好，追问输出格式对但输出内容RAG效果一般？？？，词转题也OK<BR>
   Qwen3-30B-A3B-Thinking-2507-AWQ-4bit@vLLM                        单个词效果好，词转题也OK；输出格式都对，但单个词根和追问输出内容不行；另外可能是vLLM的缘故输出think都显示出来的<BR>
   **qwen3-30b-a3b-thingking-INT4@Ollama Intel优化版+16K上下文      完全没做到指令跟随，说明INT4量化模型对长文本的指令跟随不行！<BR>**
   Qwen3-30BThink-2507-FP8@vLLM                    <BR>
-- **当提示词只含有#工作流程 #输出格式 #输出示例，去掉9.5K tokens的《高考词汇表》时**
-  **qwen3-30b-a3b-thingking-INT4@Ollama+16K上下文                  单个词效果好，词转题OK，追问时输出格式OK但RAG都不行；输出think都显示出来的<BR>，有时可能因VRAM短暂不够要过10分钟（ollama自动退出模型时间）才能继续问？？？**<BR>
-  **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文                   单个词效果好，词转题OK，追问时输出格式OK但RAG都不行;输出无Think，比thinking模型干净实用速度快最多等不到1min模型加载时间**<BR>
+- **当提示词只含有#工作流程 #输出格式 #输出示例，去掉9.5K tokens的《高考词汇表》时；EntropyYue/jina-embeddings-v2-base-zh（embed效果不如qwen3-0.6b）**
+  **qwen3-30b-a3b-thingking-INT4@Ollama+16K上下文                  单个词、词转题效果好，追问时输出格式OK但RAG都不行；输出think都显示出来的<BR>，有时可能因VRAM短暂不够要过10分钟（ollama自动退出模型时间）才能继续问？？？**<BR>
+  **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文                   单个词、词转题效果好，追问时输出格式OK但RAG都不行;输出无Think，比thinking模型干净实用速度快最多等不到1min模型加载时间**<BR>
                                                                   有意思的是词转题在“Instruction"里加个仔细就能做对题！（1、对于。。。或者题目的答案涉及到某一单词需补充学习时（先**仔细**分析题目再把答案单词做为”该单词“进入下面的工作流程）“）<BR>
+- 🔴**当提示词只含有#工作流程 #输出格式 #输出示例，去掉9.5K tokens的《高考词汇表》时；shaw/dmeta-embedding-zh（embed效果接近qwen3-0.6b，果然后面的RAG召回比jina要好！！！）**
+ 🔴 **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文         单个词、词转题效果好，追问（cough拟声词/cess-为词根词/escape同根词）时输出格式和RAG召回都OK了！目前应用层面上最好效果**<BR>                                                                  
+Tips：
+- 因为偶尔会出现VRAM不够的情况，所以把ollama的模型上下文进一步减小到12000（减少300-400MB显存应该正好够了，因为以前只有当连续发问embed和chat模型一起被调用时才偶尔报VRAM不够）
+- Dify 最好结果的Backup配置如下
+**Dify 知识库配置：《___高考词汇-记忆技巧AI校对版V3-Pub按类别-词根-词缀-合成词分割》.txt；分隔符“=====”、每块1Ktokens/500t重叠、用shaw/dmeta-embedding-zh嵌入、混合检索（权重语义和关键词各半）TOP10** <BR>
+**Dify chatbot召回设置：混合检索（权重语义和关键词各半）TOP10** <BR>
+**Dify chatbot的提示词如下：** <BR>
+```bash
+# 本应用名称：高考单词王
 
-## 因为偶尔会出现VRAM不够的情况，所以把ollama的模型上下文进一步减小到12000（减少300-400MB显存应该正好够了，因为以前只有当连续发问embed和chat模型一起被调用时才偶尔报VRAM不够）
+# 本应用功能：
+通过检索《Context》来学习和复习高考英语单词。不回答任何和英语学习无关的问题
 
+#工作流程
+1、对于给定的单词、词组或者题目的答案涉及到某一单词需补充学习时（先仔细分析题目再把答案单词做为”该单词“进入下面的工作流程）
+1.1、从《Context》中查其记忆技巧包括合成词、构词分析、词源分析，如果查到该单词就使用粗体输出并输出关于这个单词的信息，有该单词的构词分析和词源分析信息就输出。
+1.2、最后为这个单词的每一个词性和主要意思编写一句带有该单词的高考难度的简单例句并翻译，并且例句中这个单词用粗体显示
 
-  
+# 输出格式始终用MD格式，除必要外其他用于都始终用中文
+# 输出示例1：(给定一个单词或词组）
+**necessary：['nesa,seri] adj.必要的；必需的**
+**【构词分析】**
+necessary=ne（不）+cess（走开）+ary（形容词后缀）  →  不能离开的 →    必需的，必要的**
+**【主要用法的例句】**
+Hard work is **necessary** if you want to pass the exam. 如果你想通过考试，努力是**必要的**。
+# 输出示例2：(给定一道答案为单个单词的题目）
+**【原题】The fact that I didn't have enough experience was really a big ________ .(advantage)**
+【解析】括号中给出的是 advantage（优势），但根据句意，“我没有足够经验”显然是一个不利条件，所以这里不能填“advantage”（优势），而应该填它的反义词。advantage（名词，优势）的反义词是 disadvantage（名词，劣势）,前缀 “dis-” 表示否定或相反含义，常用于构成反义词。原题的中文翻译是“我没有足够经验这一事实确实是一个很大的劣势。”
+**【答案】disadvantage** [disəd'veantud3]n.缺点，劣势
+**【构词分析】**
+disadvantage=dis（反义）+ advantage（ 优点，优势）→ 缺点，劣势
+**【主要用法的例句】**
+One **disadvantage** of living in the city is the high cost of housing. 住在城市的一个**缺点**是房价高昂。
+His lack of experience was a serious **disadvantage** in the job interview.  他缺乏经验在面试中是个严重**劣势**。
+```                                                
+**Dify chatbot的开场白如下：** <BR>
+```bash
+欢迎使用《高考单词王》通过词根词缀和词源故事以及精彩例句学习高考单词！请输入你的单词，例如escape
+注：
+1、本应用关于高考单词有关信息均来自网络和AI生成，仅供学习和参考。
+2、本应用支持多轮追问，例如可以追问“和cough一样的拟声词高考里还有哪些？”、”和necessary有相同词缀的高考词汇还有哪些？“
+3、本应用甚至还可以帮助你分析”词性转换“真题
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+escape
+帮我分析下面这道词性转换真题：It's our family (_____) to exchange gifts on New Year's Eve. (traditional)
+cess-为词根的单词有哪些？
+和escape同词根的高考词汇还有哪些？
+和cough一样的拟声词高考里还有哪些？
+```
+- **🔴目前Ollama占用~21GB显存 + Dify/Docker@WSL虚拟机上的3-4GB内存 + Windows开销3-4G已经达到28-29GB，占总内存的87%以上了且偶有OOM内存不够发生；可用说已经精打细算已是本次系统硬件的极限!**
+  Ollama显存需求 = qwen3-30b-a3b-instruct-2507-Q4模型19GB + 12000上下文的KV Cache~1.2GB + Embedding模型0.4GB + Overhead开销0.XGB

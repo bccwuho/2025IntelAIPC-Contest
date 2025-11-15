@@ -1,73 +1,68 @@
-# 2025IntelAIPC-Contest
-2025IntelAIPC-Contest Log &amp; Summary
+# 2025IntelAIPC-Contest Log &amp; Summary
 
-参考：
-https://www.bilibili.com/video/BV1iKeJzSEMs Intel Graphics Software里设置 共享显存
-https://www.bilibili.com/video/BV1PDAteWESE 使用Ollama Intel iGPU/dGPU优化版 github.com/intel/ipex-llm
-
-拿到的AIPC硬件信息如下：
+## 0. 拿到的AIPC硬件信息如下：
 CPU：Ultra7 二代258V
 iGPU: Arc-140V(16G)
 内存：32GB-8533
 <img width="1074" height="255" alt="image" src="https://github.com/user-attachments/assets/54b4336f-421b-43b1-ada6-625833ca92e9" />
 
-Intel Graphics Software里设置共享显存 为24GB
+Intel Graphics Software里设置共享显存 为24GB；参考https://www.bilibili.com/video/BV1iKeJzSEMs Intel Graphics Software里设置共享显存
 <img width="1730" height="436" alt="image" src="https://github.com/user-attachments/assets/177d6f03-4d2a-4d13-b3ea-2ef3822610cb" />
 
-去ollama.com 网站下载windows版的官方ollama版本
-
+## 1. 安装Ollama Intel优化版，参考 https://www.bilibili.com/video/BV1PDAteWESE 使用Ollama Intel iGPU/dGPU优化版 github.com/intel/ipex-llm
+### 1.1 去ollama.com 官网下载和安装windows版
 打开PowerShell （以管理员身份运行）
-Ollama run qwen3:30b-a3b-thinking-2507-q4_K_M --verbose
-测得生成速度为~16tokens/s
+Ollama run qwen3:30b-a3b-thinking-2507-q4_K_M --verbose   <BR>
+**测得生成速度为~16tokens/s  <BR>**
 <img width="1145" height="755" alt="image" src="https://github.com/user-attachments/assets/e1ff4909-f33f-4858-a653-09dbcf766d7c" />
 
-**去https://github.com/intel/ipex-llm/blob/main/docs/mddocs/Quickstart/ollama_portable_zip_quickstart.md 下载最新的Ollama Intel优化版 （ollama-ipex-llm-2.3.0b20250725-win.zip 对应OllamaV0.9.3，之前版本有可能不支持MoE）**
-解压，然后start-ollama.bat中加入“ set OLLAMA_NUM_CTX=16384 ” 来扩大上下文到16K（>单词表9.5K+词汇记忆chunckTOP10*0.25K；缺省Ollama只给2K），最后运行start-ollama.bat，注意在运行前要关闭之前的Ollama官方版本
-然后Ollama run qwen3:30b-a3b-thinking-2507-q4_K_M --verbose
-测得生成速度为\~20tokens/s，的确Ollama Intel优化版比官方版快了~25%，此时VRAM消耗达到20.9GB
+### 1.2 下载和安装最新的Ollama Intel优化版
+去https://github.com/intel/ipex-llm/blob/main/docs/mddocs/Quickstart/ollama_portable_zip_quickstart.md 下载最新的Ollama Intel优化版 （ollama-ipex-llm-2.3.0b20250725-win.zip 对应OllamaV0.9.3，之前版本有可能不支持MoE）；<BR>
+解压，然后start-ollama.bat中加入“ set OLLAMA_NUM_CTX=16384 ” 来扩大上下文到16K（>单词表9.5K+词汇记忆chunckTOP10*0.25K；缺省Ollama只给2K），最后运行start-ollama.bat，注意在运行前要关闭之前的Ollama官方版本<BR>
+
+### 1.3 下载和运行LLM、Embedding和Rerank（最后由于Ollama目前还不支持Rerank放弃）模型
+然后Ollama run qwen3:30b-a3b-thinking-2507-q4_K_M --verbose <BR>
+**测得生成速度为\~20tokens/s，的确Ollama Intel优化版比官方版快了~25%，此时VRAM消耗达到20.9GB<BR>**
 <img width="1141" height="760" alt="image" src="https://github.com/user-attachments/assets/5ccc9a7d-665d-4235-b3a5-bcd9f7e31962" />
 
-打开另一个PowerShell （以管理员身份运行）
-ollama pull qwen3-embedding:0.6b-q8_0 （Q8大小700MB，context达32K）
-失败，发现官方ollama 运行embedding模型是成功的，ollama run qwen3-embedding:0.6b-q8_0 "hi"。说明可能目前Ollama Intel优化版支持embedding还不够，https://github.com/ollama/ollama/issues/12368 里说HF的模型是OK的
-但实际用 ollama create qwen3-embedding-0.6b-q8_0 -f Modelfile 指向HF模型还是不行，所以放弃Ollama Intel优化版！！！
+打开另一个PowerShell （以管理员身份运行）<BR>
+ollama pull qwen3-embedding:0.6b-q8_0 （Q8大小700MB，context达32K） <BR>
+**失败，发现官方ollama 运行embedding模型是成功的，ollama run qwen3-embedding:0.6b-q8_0 "hi"。说明可能目前Ollama Intel优化版支持embedding还不够**，https://github.com/ollama/ollama/issues/12368 里说HF的模型是OK的  <BR>
+但实际用 ollama create qwen3-embedding-0.6b-q8_0 -f Modelfile 指向HF模型还是不行，所以放弃Ollama Intel优化版！！！ <BR>
 
-Wait...
-后来发现改用 nomic-embed-text 模型就可以了！！！
+Wait... 后来发现改用 nomic-embed-text 模型就可以了！！！ <BR>
 
-用下面的命令来下载nomic-embed-text模型 https://ollama.com/library/nomic-embed-text （FP16也只有270MB，Context只有2K）
-C:\Ollama4Intel> ./ollama pull nomic-embed-text  
+用下面的命令来下载nomic-embed-text模型 https://ollama.com/library/nomic-embed-text （FP16也只有270MB，Context只有2K） <BR>
+C:\Ollama4Intel> ./ollama pull nomic-embed-text   <BR>
 
-用下面的命令来测试
-curl -Uri "http://localhost:11434/api/embed" -Method POST -ContentType "application/json" -Body '{"model":"nomic-embed-text","input":["你好世界","嵌入模型测试"]}'
+用下面的命令来测试<BR>
+curl -Uri "http://localhost:11434/api/embed" -Method POST -ContentType "application/json" -Body '{"model":"nomic-embed-text","input":["你好世界","嵌入模型测试"]}'  <BR>
 
-研究了Embedding 模型的榜单，发现一些对中英文友好且在Ollama直接能用的Embedding模型
+**研究了Embedding 模型的榜单，发现一些对中英文友好且在Ollama直接能用的Embedding模型 <BR>
 https://github.com/embeddings-benchmark/mteb
-https://huggingface.co/spaces/mteb/leaderboard
+https://huggingface.co/spaces/mteb/leaderboard**
 
 ```bash
 ./ollama pull shaw/dmeta-embedding-zh                1K上下文，409MB，2025年出的，其small版283MB在MTEB中英文排名与Qwen3-0.6b-embedding相当，平均分为66
 ollama pull EntropyYue/jina-embeddings-v2-base-zh    8K上下文，322MB，2024年出的，其v3多语言版在MTEB总榜上比Qwen3-0.6b-embedding平均分差6分为58分
 C:\Ollama4Intel> ./ollama pull nomic-embed-text      2K上下文，270MB，2024年出的，中英文性能未知
 ```
-根据https://ollama.com/dengcao/Qwen3-Reranker-0.6B 所描述的“截止2025年6月11日，ollama暂不支持重排模型。经测试Ragflow 0.19和Dify不支持ollama的重排模型，添加所有ollama的重排模型时均会提示错误。FastGPT虽然可以添加，但是重排无效。”所以暂时先不安装rerank模型了。
+**根据https://ollama.com/dengcao/Qwen3-Reranker-0.6B 所描述的“截止2025年6月11日，ollama暂不支持重排模型。经测试Ragflow 0.19和Dify不支持ollama的重排模型，添加所有ollama的重排模型时均会提示错误。FastGPT虽然可以添加，但是重排无效。”所以暂时先不安装rerank模型了。**
 
 ## 2. 安装Dify
 
 ### 2.1 安装WSL2的Ubuntu系统
 
-打开Windows Powershell
-wsl --install -d Ubuntu
-
-wsl -d Ubuntu 打开并进入Ubuntu系统
+打开Windows Powershell，运行 wsl --install -d Ubuntu <BR>
+wsl -d Ubuntu 打开并进入Ubuntu系统 <BR>
 
 ### 2.2 安装Docker Compose，参考 https://docs.docker.com/desktop/setup/install/windows-install/#wsl-2-backend
 
 ### 2.3 通过WSL2 在Docker Compose中安装和运行 Dify ，参考https://legacy-docs.dify.ai/getting-started/install-self-hosted/docker-compose 
 
-打开WSL终端
-sudo su   进入root再运行上面URL中的命令！！！
-按照https://legacy-docs.dify.ai/getting-started/install-self-hosted/docker-compose  做有可能再docker compose ps时发现db起不来，看log后发现是permission错误，咨询AI后使用下面命令搞定，只是后面都要进~/apps/dify/docker 启动docker compose up -d
+打开WSL终端 <BR>
+sudo su   进入root再运行上面URL中的命令！！！ <BR>
+按照https://legacy-docs.dify.ai/getting-started/install-self-hosted/docker-compose  做有可能再docker compose ps时发现db起不来，看log后发现是permission错误，咨询AI后使用下面命令搞定，只是后面都要进~/apps/dify/docker 启动docker compose up -d <BR>
 ```bash
 # 在你的 WSL 发行版（Ubuntu 等）里：
 mkdir -p ~/apps
@@ -81,20 +76,20 @@ docker compose up -d
 docker compose ps
 ```
 
-重启电脑后要
-打开 Taskbar上的Docker Desktop
-打开 WSL的Ubuntu
-sudo su -   （默认passwd= devcloud）
-cd ~/apps/dify/docker
-docker compose up -d
+**重启电脑后要**<BR>
+打开 Taskbar上的Docker Desktop<BR>
+打开 WSL的Ubuntu<BR>
+sudo su -   （默认passwd= devcloud）<BR>
+cd ~/apps/dify/docker<BR>
+docker compose up -d<BR>
 
-docker compose ps
+docker compose ps<BR>
 
-http://localhost/install
-临时的email用test1@test.com / test12345
-登录后配置Dify使用模型时，发现在ollama run qwen3-30b时内存不够了，Task Manager中其实是够的，原因是WSL2虚拟机缺省占用了16G（通过free -h能看到），所以用以下配置再重启WSL2
+http://localhost/install  <BR>
+临时的email用test1@test.com / test12345  <BR>
+登录后配置Dify使用模型时，发现在ollama run qwen3-30b时内存不够了，Task Manager中其实是够的，原因是WSL2虚拟机缺省占用了16G（通过free -h能看到），所以用以下配置再重启WSL2  <BR>
 
-调整 WSL 配额，在 Windows 编辑 C:\Users\devcloud\.wslconfig（没有就新建）：
+调整 WSL 配额，在 Windows 编辑 C:\Users\devcloud\.wslconfig（没有就新建）：<BR>
 ```bash
 [wsl2]
 memory=3GB          # 按你机器内存设置，比如 Dify需要2C4G,但此场景为了省内存所以极限可以到3GB
@@ -102,11 +97,11 @@ swap=1GB            # 建议给足，避免峰值 OOM
 localhostForwarding=true
 ```
 
-**另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost**
-http://host.docker.internal:11434
-**注意配置Ollama模型时要把缺省类型从“Completion”改为“Chat”，还要设置context 长度（缺省只有4096）到16384**
+**另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost** <BR>
+http://host.docker.internal:11434    <BR>
+**注意配置Ollama模型时要把缺省类型从“Completion”改为“Chat”，还要设置context 长度（缺省只有4096）到16384** <BR>
 
-# 重启机器后启动所有项目
+## 3. 重启机器后启动所有项目
 
 ```bash
 打开Windows Powershell
@@ -118,26 +113,28 @@ cd C:\Ollama4Intel
 打开 WSL的Ubuntu
 sudo su -   （默认passwd= devcloud）
 cd ~/apps/dify/docker
-docker-compose up  -d # 重启Ubuntu后有些服务自动重启了，但web服务还没有起，并且如果用docker-compose start似乎Dify原来的数据就没有了，用up 就还有？？？
+docker-compose up  -d # 🟥重启Ubuntu后有些服务自动重启了，但web服务还没有起，并且如果用docker-compose start似乎Dify原来的数据就没有了，用up 就还有？？？
 docker-compose ps
 此时Docker和Dify应该都已经up了，如果没有up（有时表面up了，但浏览器中出不来？？？），则 docker-compose restart 或者 docker-compose up -d 
 
 http://localhost/apps    临时的email用test1@test.com / test12345
 另外Dify集成LLM时，要使用WSL虚拟机的宿主机的名字host.docker.internal 而不是127.0.0.1或localhost
 http://host.docker.internal:11434
-qwen3:30b-a3b-thinking-2507-q4_K_M
 qwen3:30b-a3b-instruct-2507-q4_K_M
+shaw/dmeta-embedding-zh
+
 EntropyYue/jina-embeddings-v2-base-zh
+qwen3:30b-a3b-thinking-2507-q4_K_M
 ```
 
-# 关机时运行的命令
+## 4. 关机时运行的命令
 ```bash
 cd ~/apps/dify/docker
 docker-compose stop    关闭Dify，而不是docker-compose down，会把docker删除，里面的数据就没了？？？
 关闭ollama窗口
 ```
 
-## 实测效果
+## 5. 实测效果 和 🔴结论
 - **当提示词含有#工作流程 #输出格式 #输出示例 和 9.5K tokens的《高考词汇表》时；qwen3-30b-Q8（可用） >> qwen3-30b-AWQ4 > qwen3-30b-INT4；EntropyYue/jina-embeddings-v2-base-zh（embed效果不如qwen3-0.6b）**
   gpt5mini@gptgod                                                  输出格式和输出内容的RAG效果都很好？？？<BR>
   qwen3-30b-a3b-2507-Q8:ctx32k-mlock@Ollama                        单个词/词根效果好，追问输出格式对但输出内容RAG效果一般？？？，词转题也OK<BR>
@@ -149,8 +146,8 @@ docker-compose stop    关闭Dify，而不是docker-compose down，会把docker�
   **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文                   单个词、词转题效果好，追问时输出格式OK但RAG都不行;输出无Think，比thinking模型干净实用速度快最多等不到1min模型加载时间**<BR>
                                                                   有意思的是词转题在“Instruction"里加个仔细就能做对题！（1、对于。。。或者题目的答案涉及到某一单词需补充学习时（先**仔细**分析题目再把答案单词做为”该单词“进入下面的工作流程）“）<BR>
 - 🔴**当提示词只含有#工作流程 #输出格式 #输出示例，去掉9.5K tokens的《高考词汇表》时；shaw/dmeta-embedding-zh（embed效果接近qwen3-0.6b，果然后面的RAG召回比jina要好！！！）**
- 🔴 **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文         单个词、词转题效果好，追问（cough拟声词/cess-为词根词/escape同根词）时输出格式和RAG召回都OK了！目前应用层面上最好效果**<BR>                                                                  
-Tips：
+ 🔴 **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文         单个词、词转题效果好，追问（cough拟声词/cess-为词根词/escape同根词）时输出格式和RAG召回都OK了！目前应用层面上最好效果，速度也不错**<BR>                                                                  
+Tips：<BR>
 - 因为偶尔会出现VRAM不够的情况，所以把ollama的模型上下文进一步减小到12000（减少300-400MB显存应该正好够了，因为以前只有当连续发问embed和chat模型一起被调用时才偶尔报VRAM不够）
 - Dify 最好结果的Backup配置如下
 **Dify 知识库配置：《___高考词汇-记忆技巧AI校对版V3-Pub按类别-词根-词缀-合成词分割》.txt；分隔符“=====”、每块1Ktokens/500t重叠、用shaw/dmeta-embedding-zh嵌入、混合检索（权重语义和关键词各半）TOP10** <BR>

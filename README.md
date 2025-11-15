@@ -145,11 +145,12 @@ docker-compose stop    关闭Dify，而不是docker-compose down，会把docker�
   **qwen3-30b-a3b-thingking-INT4@Ollama+16K上下文                  单个词、词转题效果好，追问时输出格式OK但RAG都不行；输出think都显示出来的<BR>，有时可能因VRAM短暂不够要过10分钟（ollama自动退出模型时间）才能继续问？？？**<BR>
   **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文                   单个词、词转题效果好，追问时输出格式OK但RAG都不行;输出无Think，比thinking模型干净实用速度快最多等不到1min模型加载时间**<BR>
                                                                   有意思的是词转题在“Instruction"里加个仔细就能做对题！（1、对于。。。或者题目的答案涉及到某一单词需补充学习时（先**仔细**分析题目再把答案单词做为”该单词“进入下面的工作流程）“）<BR>
-- 🔴**当提示词只含有#工作流程 #输出格式 #输出示例，去掉9.5K tokens的《高考词汇表》时；shaw/dmeta-embedding-zh（embed效果接近qwen3-0.6b，果然后面的RAG召回比jina要好！！！）**
- 🔴 **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文         单个词、词转题效果好，追问（cough拟声词/cess-为词根词/escape同根词）时输出格式和RAG召回都OK了！目前应用层面上最好效果，速度也不错**<BR>                                                                  
+- 🔴**当提示词只含有#工作流程 #输出格式 #输出示例，去掉9.5K tokens的《高考词汇表》时；shaw/dmeta-embedding-zh（embed效果接近qwen3-0.6b，果然后面的RAG召回比jina要好！！！）**<BR>
+ 🔴 **qwen3-30b-a3b-instruct-INT4@Ollama+16K上下文         单个词、词转题效果好，追问（cough拟声词/cess-为词根词/escape同根词）时输出格式和RAG召回都OK了！目前应用层面上最好效果，速度也不错**<BR>
+- ”cess-为词根的单词有哪些？“这样问就能在TOP10中召回；”cess为词根的单词有哪些？”这样问就不能在TOP10内召回；所以对于智商勉强够的小模型，问题的文本差异对回答质量还有有一定关系的      <BR>                                                        
 Tips：<BR>
 - 因为偶尔会出现VRAM不够的情况，所以把ollama的模型上下文进一步减小到12000（减少300-400MB显存应该正好够了，因为以前只有当连续发问embed和chat模型一起被调用时才偶尔报VRAM不够）
-- Dify 最好结果的Backup配置如下
+- Dify 最好结果的Backup配置如下 <BR>
 **Dify 知识库配置：《___高考词汇-记忆技巧AI校对版V3-Pub按类别-词根-词缀-合成词分割》.txt；分隔符“=====”、每块1Ktokens/500t重叠、用shaw/dmeta-embedding-zh嵌入、混合检索（权重语义和关键词各半）TOP10** <BR>
 **Dify chatbot召回设置：混合检索（权重语义和关键词各半）TOP10** <BR>
 **Dify chatbot的提示词如下：** <BR>

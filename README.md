@@ -198,3 +198,6 @@ cess-为词根的单词有哪些？
 ```
 - **🔴目前Ollama占用~21GB显存 + Dify/Docker@WSL虚拟机上的3-4GB内存 + Windows开销3-4G已经达到28-29GB，占总内存的87%以上了且偶有OOM内存不够发生；可用说已经精打细算已是本次系统硬件的极限!**
   Ollama显存需求 = qwen3-30b-a3b-instruct-2507-Q4模型19GB + 12000上下文的KV Cache~1.2GB + Embedding模型0.4GB + Overhead开销0.XGB
+
+  ![cough追问录屏 00_00_00-00_00_30~1](https://github.com/user-attachments/assets/c4469278-6807-48f7-bbda-700b75c7aba2)
+

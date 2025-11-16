@@ -199,5 +199,13 @@ cess-为词根的单词有哪些？
 - **🔴目前Ollama占用~21GB显存 + Dify/Docker@WSL虚拟机上的3-4GB内存 + Windows开销3-4G已经达到28-29GB，占总内存的87%以上了且偶有OOM内存不够发生；可用说已经精打细算已是本次系统硬件的极限!**
   Ollama显存需求 = qwen3-30b-a3b-instruct-2507-Q4模型19GB + 12000上下文的KV Cache~1.2GB + Embedding模型0.4GB + Overhead开销0.XGB
 
+## DEMO
+
   ![cough追问录屏 00_00_00-00_00_30~1](https://github.com/user-attachments/assets/c4469278-6807-48f7-bbda-700b75c7aba2)
+  ![escape动画GIF](https://github.com/user-attachments/assets/f49d5e6c-b69d-4381-8e5a-46a65f58d3f3)
+  ![tradition词转题动画GIF](https://github.com/user-attachments/assets/2002d36e-403a-4d0e-b0d1-02587b5df2aa)
+  <img width="1870" height="769" alt="高考单词王后台截图" src="https://github.com/user-attachments/assets/7b58a65e-ea97-4f92-9951-ca46861af61a" />
+
+
+
 

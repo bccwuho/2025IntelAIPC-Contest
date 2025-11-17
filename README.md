@@ -1,5 +1,7 @@
 # 2025IntelAIPC-Contest Log &amp; Summary
 
+## 2025阿里端侧AI创新挑战赛参赛文章见： https://modelscope.cn/learn/2668
+
 ## 0. 拿到的AIPC硬件信息如下：
 CPU：Ultra7 二代258V
 iGPU: Arc-140V(16G)
@@ -152,7 +154,7 @@ Tips：<BR>
 - 因为偶尔会出现VRAM不够的情况，所以把ollama的模型上下文进一步减小到12000（减少300-400MB显存应该正好够了，因为以前只有当连续发问embed和chat模型一起被调用时才偶尔报VRAM不够）
 - Dify 最好结果的Backup配置如下 <BR>
 **Dify 知识库配置：《___高考词汇-记忆技巧AI校对版V3-Pub按类别-词根-词缀-合成词分割》.txt；分隔符“=====”、每块1Ktokens/500t重叠、用shaw/dmeta-embedding-zh嵌入、混合检索（权重关键词1.0语义0.0）TOP10** <BR>
-**Dify chatbot召回设置：混合检索（权重关键词1.0语义0.0 实践下来效果最好，根据https://www.bilibili.com/video/BV1AUCFYpEis 的理解关键词不是简单的CTRL+F有一定的模糊在，所以是最适合我们场景的配置）TOP10** <BR>
+**Dify chatbot召回设置：混合检索（权重关键词1.0语义0.0 实践下来效果最好，根据https://www.bilibili.com/video/BV1AUCFYpEis 的理解关键词不是简单的CTRL+F，而是基于TF-IDF(词频逆文档频率）算法，即根据每个词在文本里的重要性来匹配（有点像搜索算法，关键词+一定的语义模糊性），所以是最适合我们场景的配置）TOP10** <BR>
 **Dify chatbot的提示词如下：** <BR>
 ```bash
 # 本应用名称：高考单词王

@@ -113,7 +113,7 @@ cd C:\Ollama4Intel
 打开 WSL的Ubuntu
 sudo su -   （默认passwd= devcloud）
 cd ~/apps/dify/docker
-docker-compose up  -d # 🟥重启Ubuntu后有些服务自动重启了，但web服务还没有起，并且如果用docker-compose start似乎Dify原来的数据就没有了，用up 就还有？？？
+docker-compose up  -d # 🟥重启Ubuntu后有些服务自动重启了，但Difyweb服务还没有起，所以要用这个命令彻底启动Dify；有时会碰到Dify无原来的配置数据了，这时要么等足够时间要么用docker-compose restart重启有时就好了！！！
 docker-compose ps
 此时Docker和Dify应该都已经up了，如果没有up（有时表面up了，但浏览器中出不来？？？），则 docker-compose restart 或者 docker-compose up -d 
 

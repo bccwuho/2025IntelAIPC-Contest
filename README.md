@@ -1,6 +1,6 @@
 # 2025IntelAIPC-Contest Log &amp; Summary
 
-## 2025阿里端侧AI创新挑战赛参赛文章见： https://modelscope.cn/learn/2668
+## 2025阿里端侧AI创新挑战赛参赛文章见： https://modelscope.cn/learn/2788 和 https://modelscope.cn/competition/145/talkArea 讨论区
 
 ## 0. 拿到的AIPC硬件信息如下：
 CPU：Ultra7 二代258V

@@ -1,5 +1,6 @@
-Test-NetConnection region1.v2.argotunnel.com -Port 7844
-Test-NetConnection region2.v2.argotunnel.com -Port 7844
+- Test-NetConnection connect.ngrok-agent.com -Port 443
+- Test-NetConnection region1.v2.argotunnel.com -Port 7844
+- Test-NetConnection region2.v2.argotunnel.com -Port 7844
 
 # 2025IntelAIPC-Contest Log &amp; Summary
 

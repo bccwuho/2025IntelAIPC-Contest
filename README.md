@@ -1,5 +1,5 @@
 - winget install -e --id Ngrok.Ngrok
-- ngrok config add-authtoken cr_362oEqgNMVK9ab3VClJFwcXrwyj
+- ngrok config add-authtoken 362pBVy3S6Rwm8jW0A1ALF2kicY_7YKWVNvsb95waEvX8C5K
 - ngrok http 80   # 你的 Dify/nginx 在本机 80
 
 - Test-NetConnection connect.ngrok-agent.com -Port 443

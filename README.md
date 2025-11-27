@@ -1,11 +1,3 @@
-- winget install -e --id Ngrok.Ngrok
-- ngrok config add-authtoken 362pBVy3S6Rwm8jW0A1ALF2kicY_7YKWVNvsb95waEvX8C5K
-- ngrok http 80   # 你的 Dify/nginx 在本机 80
-
-- Test-NetConnection connect.ngrok-agent.com -Port 443
-- Test-NetConnection region1.v2.argotunnel.com -Port 7844
-- Test-NetConnection region2.v2.argotunnel.com -Port 7844
-
 # 2025IntelAIPC-Contest Log &amp; Summary
 
 ## 2025阿里端侧AI创新挑战赛参赛文章见： https://modelscope.cn/learn/2788 和 https://modelscope.cn/competition/145/talkArea 讨论区
@@ -215,6 +207,39 @@ cess-为词根的单词有哪些？
   ![escape动画GIF](https://github.com/user-attachments/assets/f49d5e6c-b69d-4381-8e5a-46a65f58d3f3)
   ![tradition词转题动画GIF](https://github.com/user-attachments/assets/2002d36e-403a-4d0e-b0d1-02587b5df2aa)
   <img width="1870" height="769" alt="高考单词王后台截图" src="https://github.com/user-attachments/assets/7b58a65e-ea97-4f92-9951-ca46861af61a" />
+
+## 6. 本地服务免费转公网（内网穿透）服务https://sunfast-malcolm-extemporarily.ngrok-free.dev/
+
+🔴试了cpolar、Cloudflare Tunnel，最后还是ngrok搞定的！！！<BR>
+
+```bash
+winget install -e --id Ngrok.Ngrok
+
+然后在 ngrok 注册账号（139邮箱不行,本次用的是outlook邮箱），在控制台(https://dashboard.ngrok.com/authtokens)Add并拿到 Authtoken，然后执行：
+ngrok config add-authtoken <你的_authtoken>
+
+最后
+ngrok http 80
+ngrok tcp 3389
+```
+<img width="1890" height="470" alt="image" src="https://github.com/user-attachments/assets/d4f02da2-8b63-4030-a704-6c8aae695a2a" />
+
+第一次访问https://sunfast-malcolm-extemporarily.ngrok-free.dev/ 会得到下面这个页面<BR>
+<img width="1133" height="656" alt="image" src="https://github.com/user-attachments/assets/0ef8cd72-32dc-470c-9243-8bd26b333c23" />
+
+
+- Cloudflare Tunnel：临时隧道最简单，**下面一句话就能搞定，无需账号且只要这个进程在临时域名就有效，适合HTTP/HTTPS场景，但在本场景下云环境封了outgoing到7844端口的访问**，所以不行！
+  cloudflared tunnel --protocol http2 --url http://localhost:80
+- https://www.cpolar.com/download：国内厂商，也比较简单，注册账号后登录http://localhost:9200(win下）/cpolar authtoken xxxxxxx然后cpolar http <本地Dify Web端口=80>即可（Linux下）,**免费支持HTTP/HTTPS/TCP（含RDP等，同时支持4个隧道，1Mbps,_但有效期只有24小时_）场景，但不支持UDP场景，按理和ngrok一样只需要环境不封outgoing到443/80端口访问即可，但本场景下就是没搞定，莫非本次是使用US的云环境而cpolar更适合国内环境（139邮箱注册）？？？**
+**- ngrok.com ：国外厂商，也比较简单且更强大，注册账号后，免费支持HTTP/HTTPS场景且永久XX.grok-free.dev域名（同时1个隧道1GB流量），_TCP隧道场景（需绑定信用卡）_，但不支持UDP场景，且只需要环境不封outgoing到443/80端口访问即可，所以通用性很强！！！**
+
+- 自建型：FRP、Inlets（需要你有一台云服务器当“出口”）
+FRP 支持 TCP/UDP/HTTP/HTTPS，能把 3389 这种 RDP 端口映射到你云主机的公网口，适合长期自控；但需要自己部署 frps（服务端）+ frpc（客户端）。​
+Inlets 也是自建隧道方案（更 Cloud-Native），自己掌控数据与出口，同样需要有一台带公网 IP 的“出口”实例。​
+DOCS.INLETS.DEV
+
+
+
 
 
 

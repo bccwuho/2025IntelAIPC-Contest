@@ -231,7 +231,7 @@ ngrok tcp 3389
 - Cloudflare Tunnel：临时隧道最简单，**下面一句话就能搞定，无需账号且只要这个进程在临时域名就有效，适合HTTP/HTTPS场景，但在本场景下云环境封了outgoing到7844端口的访问**，所以不行！
   cloudflared tunnel --protocol http2 --url http://localhost:80
 - https://www.cpolar.com/download：国内厂商，也比较简单，注册账号后登录http://localhost:9200(win下）/cpolar authtoken xxxxxxx然后cpolar http <本地Dify Web端口=80>即可（Linux下）,**免费支持HTTP/HTTPS/TCP（含RDP等，同时支持4个隧道，1Mbps,_但有效期只有24小时_）场景，但不支持UDP场景，按理和ngrok一样只需要环境不封outgoing到443/80端口访问即可，但本场景下就是没搞定，莫非本次是使用US的云环境而cpolar更适合国内环境（139邮箱注册）？？？**
-**- ngrok.com ：国外厂商，也比较简单且更强大，注册账号后，免费支持HTTP/HTTPS场景且永久XX.grok-free.dev域名（同时1个隧道1GB流量），_TCP隧道场景（需绑定信用卡）_，但不支持UDP场景，且只需要环境不封outgoing到443/80端口访问即可，所以通用性很强！！！**
+- **ngrok.com ：国外厂商，也比较简单且更强大，注册账号后，免费支持HTTP/HTTPS场景且永久XX.grok-free.dev域名（同时1个隧道1GB流量），_TCP隧道场景（需绑定信用卡）_，但不支持UDP场景，且只需要环境不封outgoing到443/80端口访问即可，所以通用性很强！！！**
 
 - 自建型：FRP、Inlets（需要你有一台云服务器当“出口”）
 FRP 支持 TCP/UDP/HTTP/HTTPS，能把 3389 这种 RDP 端口映射到你云主机的公网口，适合长期自控；但需要自己部署 frps（服务端）+ frpc（客户端）。​

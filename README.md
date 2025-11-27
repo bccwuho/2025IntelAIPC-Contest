@@ -1,3 +1,7 @@
+winget install -e --id Ngrok.Ngrok
+ngrok config add-authtoken <你的_authtoken>
+ngrok http 80   # 你的 Dify/nginx 在本机 80
+
 - Test-NetConnection connect.ngrok-agent.com -Port 443
 - Test-NetConnection region1.v2.argotunnel.com -Port 7844
 - Test-NetConnection region2.v2.argotunnel.com -Port 7844
